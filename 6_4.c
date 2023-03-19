@@ -46,7 +46,6 @@ int main(int argc, char *argv[])
         }
         int n;
         n = read(fd, buf, BUFFER_SIZE);
-        printf("Read %d bytes from file\n", n);
         if (write(fd1[1], buf, n) != n)
         {
             perror("write");
@@ -104,8 +103,6 @@ int main(int argc, char *argv[])
             perror("write");
             return 1;
         }
-        printf("Wrote %d bytes to channel 2\n", j);
-        printf("Ended 1\n");
 
         free(result);
         close(fd1[0]);
@@ -132,7 +129,6 @@ int main(int argc, char *argv[])
         }
         int n;
         n = read(fd2[0], buf, BUFFER_SIZE);
-        printf("Read %d bytes from channel 3\n", n);
         if (write(fd, buf, n) != n)
         {
             perror("write");

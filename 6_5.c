@@ -50,7 +50,6 @@ int main(int argc, char *argv[])
         fd1 = open("pipe1", O_WRONLY);
         int n;
         n = read(fd, buf, BUFFER_SIZE);
-        printf("Read %d bytes from file\n", n);
         if (write(fd1, buf, n) != n)
         {
             perror("write");
@@ -108,8 +107,6 @@ int main(int argc, char *argv[])
             perror("write");
             return 1;
         }
-        printf("Wrote %d bytes to channel 2\n", j);
-        printf("Ended 1\n");
 
         free(result);
         close(fd1);
@@ -136,7 +133,6 @@ int main(int argc, char *argv[])
         fd2 = open("pipe2", O_RDONLY);
         int n;
         n = read(fd2, buf, BUFFER_SIZE);
-        printf("Read %d bytes from channel 3\n", n);
         if (write(fd, buf, n) != n)
         {
             perror("write");

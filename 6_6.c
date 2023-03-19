@@ -46,7 +46,6 @@ int main(int argc, char *argv[])
         }
         int n;
         n = read(fd, buf, BUFFER_SIZE);
-        printf("Read %d bytes from file\n", n);
         if (write(fd1[1], buf, n) != n)
         {
             perror("write");
@@ -54,7 +53,24 @@ int main(int argc, char *argv[])
         }
         close(fd);
         close(fd1[1]);
-        exit(0);
+
+        wait(NULL);
+
+        close(fd2[1]);                                          
+        fd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0666); 
+        if (fd == -1)
+        {
+            perror("open");
+            return 1;
+        }
+        n = read(fd2[0], buf, BUFFER_SIZE);
+
+        if (write(fd, buf, n) != n)
+        {
+            perror("write");
+            return 1;
+        }
+        close(fd);
     }
 
     pid2 = fork();
@@ -76,7 +92,7 @@ int main(int argc, char *argv[])
 
         for (int i = 0; i < n; i++)
         {
-            if (!isalpha(buf[i]) || strchr("AEIOUaeiou", buf[i]))
+            if (!isalpha(buf[i]) || strchr("aeiouAEIOU", buf[i]))
             {
                 result[j] = buf[i];
                 j++;
@@ -104,52 +120,14 @@ int main(int argc, char *argv[])
             perror("write");
             return 1;
         }
-        printf("Wrote %d bytes to channel 2\n", j);
-        printf("Ended 1\n");
-
         free(result);
         close(fd1[0]);
         close(fd2[1]);
         exit(0);
     }
 
-    pid3 = fork();
-
-    if (pid3 == -1)
-    {
-        perror("fork");
-        return 1;
-    }
-
-    if (pid3 == 0)
-    { // процесс 3
-        close(fd2[1]);
-        int fd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0666);
-        if (fd == -1)
-        {
-            perror("open");
-            return 1;
-        }
-        int n;
-        n = read(fd2[0], buf, BUFFER_SIZE);
-        printf("Read %d bytes from channel 3\n", n);
-        if (write(fd, buf, n) != n)
-        {
-            perror("write");
-            return 1;
-        }
-        close(fd);
-        close(fd2[0]);
-        exit(0);
-    }
-
-    close(fd1[0]);
-    close(fd1[1]);
-    close(fd2[0]);
-    close(fd2[1]);
-    wait(NULL);
-    wait(NULL);
-    wait(NULL);
+    close(fd1[0]); close(fd1[1]); close(fd2[0]); close(fd2[1]);
+    wait(NULL); wait(NULL);
 
     return 0;
 }
